@@ -1,0 +1,24 @@
+{
+  "name": "@mcp-apps/mermaid-app",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:ui": "cd ui && npx vite build",
+    "build:server": "cd server && npx tsc",
+    "build": "npm run build:ui && npm run build:server",
+    "dev:ui": "cd ui && npx vite",
+    "start": "node server/dist/index.js",
+    "test": "npx playwright test",
+    "test:headed": "npx playwright test --headed"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/ext-apps": "^1.0.1",
+    "@modelcontextprotocol/sdk": "^1.26.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0"
+  }
+}
