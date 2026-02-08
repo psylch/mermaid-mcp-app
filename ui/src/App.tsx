@@ -340,7 +340,7 @@ function App() {
           onRenderError={handleRenderError}
           onSvgReady={setSvgContent}
         />
-        <SendButton changeCount={changeCount} onClick={handleSendToAgent} theme={theme} />
+        <SendButton changeCount={changeCount} selectionCount={selectedElements.length} onClick={handleSendToAgent} theme={theme} />
       </div>
     );
   };

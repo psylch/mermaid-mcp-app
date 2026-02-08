@@ -2,14 +2,33 @@ import { type Theme, themeColors } from "../theme";
 
 interface SendButtonProps {
   changeCount: number;
+  selectionCount?: number;
   onClick: () => void;
   theme?: Theme;
 }
 
-export default function SendButton({ changeCount, onClick, theme = "light" }: SendButtonProps) {
-  if (changeCount === 0) return null;
+export default function SendButton({ changeCount, selectionCount = 0, onClick, theme = "light" }: SendButtonProps) {
+  const total = changeCount + selectionCount;
+  if (total === 0) return null;
 
   const colors = themeColors(theme);
+
+  // Context-aware label
+  const label = changeCount > 0 && selectionCount > 0
+    ? "Send to Agent"
+    : selectionCount > 0
+      ? "Send Selection"
+      : "Send to Agent";
+
+  const badgeText = changeCount > 0 && selectionCount > 0
+    ? `${changeCount}+${selectionCount}`
+    : changeCount > 0
+      ? `${changeCount}`
+      : `${selectionCount} sel`;
+
+  const title = changeCount > 0
+    ? `Send ${changeCount} change${changeCount !== 1 ? "s" : ""}${selectionCount > 0 ? ` and ${selectionCount} selected element${selectionCount !== 1 ? "s" : ""}` : ""} to Agent`
+    : `Send ${selectionCount} selected element${selectionCount !== 1 ? "s" : ""} to Agent`;
 
   return (
     <div style={containerStyle}>
@@ -39,12 +58,12 @@ export default function SendButton({ changeCount, onClick, theme = "light" }: Se
           boxShadow: colors.sendBtnShadow,
           transition: "all 0.2s ease",
         }}
-        title={`Send ${changeCount} change${changeCount !== 1 ? "s" : ""} to Agent`}
+        title={title}
       >
         <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M1 7h12M8 2l5 5-5 5" />
         </svg>
-        Send to Agent
+        {label}
         <span
           style={{
             display: "inline-flex",
@@ -61,7 +80,7 @@ export default function SendButton({ changeCount, onClick, theme = "light" }: Se
             borderRadius: 8,
           }}
         >
-          {changeCount}
+          {badgeText}
         </span>
       </button>
     </div>
