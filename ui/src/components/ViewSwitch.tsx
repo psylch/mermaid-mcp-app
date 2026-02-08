@@ -8,10 +8,10 @@ interface ViewSwitchProps {
   theme?: Theme;
 }
 
-const MODES: { key: ViewMode; label: string }[] = [
-  { key: "code", label: "Code" },
-  { key: "split", label: "Split" },
-  { key: "canvas", label: "Canvas" },
+const MODES: { key: ViewMode; label: string; title: string }[] = [
+  { key: "code", label: "Code", title: "Code view" },
+  { key: "split", label: "Split", title: "Split view" },
+  { key: "canvas", label: "Canvas", title: "Canvas view" },
 ];
 
 export default function ViewSwitch({ mode, onChange, theme = "light" }: ViewSwitchProps) {
@@ -19,9 +19,9 @@ export default function ViewSwitch({ mode, onChange, theme = "light" }: ViewSwit
 
   const containerStyle: React.CSSProperties = {
     display: "inline-flex",
-    gap: 0,
-    borderRadius: 8,
-    overflow: "hidden",
+    gap: 1,
+    padding: 2,
+    borderRadius: 7,
     border: `1px solid ${colors.switchBorder}`,
     backgroundColor: colors.switchBg,
     flexShrink: 0,
@@ -29,29 +29,47 @@ export default function ViewSwitch({ mode, onChange, theme = "light" }: ViewSwit
 
   function buttonStyle(active: boolean): React.CSSProperties {
     return {
-      padding: "4px 14px",
-      fontSize: 13,
+      padding: "2px 10px",
+      fontSize: 11,
       fontWeight: active ? 600 : 400,
-      lineHeight: "22px",
+      letterSpacing: "0.02em",
+      lineHeight: "18px",
       cursor: "pointer",
       border: "none",
+      borderRadius: 5,
       backgroundColor: active ? colors.switchActiveBg : "transparent",
       color: active ? colors.switchActiveText : colors.switchInactiveText,
-      boxShadow: active ? "0 1px 2px rgba(0,0,0,0.08)" : "none",
-      transition: "background-color 0.15s, color 0.15s, box-shadow 0.15s",
+      boxShadow: active
+        ? theme === "dark"
+          ? "0 1px 2px rgba(0,0,0,0.3)"
+          : "0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04)"
+        : "none",
+      transition: "all 0.15s ease",
       outline: "none",
     };
   }
 
   return (
     <div style={containerStyle}>
-      {MODES.map(({ key, label }) => (
+      <style>{`
+        .view-switch-btn:not([aria-pressed="true"]):hover {
+          background-color: ${colors.switchHoverBg} !important;
+          color: ${colors.switchActiveText} !important;
+        }
+        .view-switch-btn:focus-visible {
+          box-shadow: inset 0 0 0 1.5px ${colors.accent} !important;
+          outline: none;
+        }
+      `}</style>
+      {MODES.map(({ key, label, title }) => (
         <button
           key={key}
           type="button"
+          className="view-switch-btn"
           style={buttonStyle(mode === key)}
           onClick={() => onChange(key)}
           aria-pressed={mode === key}
+          title={title}
         >
           {label}
         </button>

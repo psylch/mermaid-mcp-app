@@ -13,42 +13,52 @@ export default function SendButton({ changeCount, onClick, theme = "light" }: Se
 
   return (
     <div style={containerStyle}>
+      <style>{`
+        .send-btn:hover { filter: brightness(1.08); transform: translateY(-1px); box-shadow: ${colors.sendBtnShadow} !important; }
+        .send-btn:active { transform: translateY(0); filter: brightness(0.95); }
+        .send-btn:focus-visible { outline: 2px solid ${colors.accent}; outline-offset: 2px; }
+      `}</style>
       <button
         type="button"
+        className="send-btn"
         onClick={onClick}
         style={{
           display: "inline-flex",
           alignItems: "center",
-          gap: 8,
-          padding: "8px 16px",
-          fontSize: 14,
+          gap: 7,
+          padding: "6px 14px",
+          fontSize: 12,
           fontWeight: 600,
-          lineHeight: "20px",
+          letterSpacing: "0.01em",
+          lineHeight: "18px",
           color: "#ffffff",
           backgroundColor: colors.sendBtnBg,
           border: "none",
           borderRadius: 8,
           cursor: "pointer",
           boxShadow: colors.sendBtnShadow,
-          transition: "background-color 0.15s, box-shadow 0.15s",
+          transition: "all 0.2s ease",
         }}
         title={`Send ${changeCount} change${changeCount !== 1 ? "s" : ""} to Agent`}
       >
+        <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M1 7h12M8 2l5 5-5 5" />
+        </svg>
         Send to Agent
         <span
           style={{
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
-            minWidth: 20,
-            height: 20,
-            padding: "0 6px",
-            fontSize: 12,
+            minWidth: 16,
+            height: 16,
+            padding: "0 4px",
+            fontSize: 10,
             fontWeight: 700,
-            lineHeight: "20px",
+            lineHeight: "16px",
             color: colors.sendBtnBg,
-            backgroundColor: "#ffffff",
-            borderRadius: 10,
+            backgroundColor: "rgba(255,255,255,0.92)",
+            borderRadius: 8,
           }}
         >
           {changeCount}
@@ -60,7 +70,7 @@ export default function SendButton({ changeCount, onClick, theme = "light" }: Se
 
 const containerStyle: React.CSSProperties = {
   position: "absolute",
-  bottom: 16,
+  bottom: 56,
   right: 16,
   zIndex: 20,
 };

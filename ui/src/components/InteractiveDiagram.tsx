@@ -27,6 +27,7 @@ export interface InteractiveDiagramProps {
   onSelectionChange: (elements: string[]) => void;
   onCodeChange: (code: string, change?: CodeChangeInfo) => void;
   onRenderError?: (error: string | null) => void;
+  onSvgReady?: (svgHtml: string) => void;
 }
 
 /** Selection highlight color */
@@ -401,6 +402,7 @@ export default function InteractiveDiagram({
   onSelectionChange,
   onCodeChange,
   onRenderError,
+  onSvgReady,
 }: InteractiveDiagramProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -538,6 +540,7 @@ export default function InteractiveDiagram({
         containerRef.current.innerHTML = svg;
         setRenderError(null);
         onRenderError?.(null);
+        onSvgReady?.(svg);
         postProcessSvg();
         cleanupMermaidLeaks();
       })

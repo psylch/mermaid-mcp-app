@@ -4,6 +4,8 @@ import InteractiveDiagram from "./components/InteractiveDiagram";
 import CodeEditor from "./components/CodeEditor";
 import ViewSwitch, { type ViewMode } from "./components/ViewSwitch";
 import SendButton from "./components/SendButton";
+import ExportButton from "./components/ExportButton";
+import CopyButton from "./components/CopyButton";
 // ErrorDisplay removed -- errors are sent silently to AI for auto-fix
 import { detectDiagramType } from "./engine/detect";
 import { ChangeLog, type Change } from "./sync/changeLog";
@@ -39,6 +41,7 @@ function App() {
   const [mermaidCode, setMermaidCode] = useState<string>(SAMPLE_MERMAID);
   const [streaming, setStreaming] = useState(false);
   const [selectedElements, setSelectedElements] = useState<string[]>([]);
+  const [svgContent, setSvgContent] = useState<string | null>(null);
 
   // Silent error collection for AI auto-fix
   const pendingError = useRef<RenderError | null>(null);
@@ -335,6 +338,7 @@ function App() {
           onSelectionChange={setSelectedElements}
           onCodeChange={handleCodeChange}
           onRenderError={handleRenderError}
+          onSvgReady={setSvgContent}
         />
         <SendButton changeCount={changeCount} onClick={handleSendToAgent} theme={theme} />
       </div>
@@ -359,15 +363,29 @@ function App() {
         display: "flex",
         flexDirection: "column",
         backgroundColor: colors.canvasBg,
-        color: theme === "dark" ? "#e2e8f0" : "#1a202c",
+        color: theme === "dark" ? "#e4e4e7" : "#09090b",
         transition: "background-color 0.2s, color 0.2s",
         borderRadius: isFullscreen ? 0 : undefined,
       }}
     >
-      {/* Inline style for fullscreen button hover */}
+      {/* Global styles */}
       <style>{`
         .mermaid-app-root:hover .fullscreen-btn { opacity: 0.7 !important; }
         .fullscreen-btn:hover { opacity: 1 !important; }
+        .fullscreen-btn:focus-visible { opacity: 1 !important; outline: 2px solid ${colors.accent}; outline-offset: 1px; }
+        @keyframes streaming-pulse {
+          0%,100% { opacity: 0.4; }
+          50% { opacity: 1; }
+        }
+        @keyframes streaming-dot {
+          0%,20% { content: ''; }
+          40% { content: '.'; }
+          60% { content: '..'; }
+          80%,100% { content: '...'; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .streaming-indicator { animation: none !important; opacity: 0.7 !important; }
+        }
       `}</style>
 
       {/* Toolbar */}
@@ -378,31 +396,59 @@ function App() {
           justifyContent: "space-between",
           padding: "6px 12px",
           borderBottom: `1px solid ${colors.toolbarBorder}`,
-          backgroundColor: colors.toolbarBg,
+          background: colors.toolbarBg,
           flexShrink: 0,
-          transition: "background-color 0.2s, border-color 0.2s",
+          transition: "all 0.2s ease",
         }}
       >
-        <div style={{ fontSize: 13, color: colors.toolbarLabel, fontWeight: 500 }}>
-          Mermaid
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 6,
+          minWidth: 80,
+        }}>
+          <div style={{
+            width: 6,
+            height: 6,
+            borderRadius: "50%",
+            backgroundColor: colors.accent,
+            flexShrink: 0,
+          }} />
+          <span style={{
+            fontSize: 11,
+            color: colors.toolbarLabel,
+            fontWeight: 600,
+            letterSpacing: "0.06em",
+            textTransform: "uppercase" as const,
+          }}>
+            Mermaid
+          </span>
         </div>
         <ViewSwitch mode={viewMode} onChange={setViewMode} theme={theme} />
-        <div style={{ width: 60 }} />
+        <div style={{ display: "flex", gap: 4, alignItems: "center", minWidth: 80, justifyContent: "flex-end" }}>
+          <CopyButton code={mermaidCode} theme={theme} />
+          <ExportButton svgContent={svgContent} theme={theme} />
+        </div>
       </div>
 
-      {/* Status indicators */}
+      {/* Streaming indicator */}
       {streaming && (
         <div
+          className="streaming-indicator"
           style={{
-            padding: "4px 12px",
+            padding: "3px 12px",
             textAlign: "center",
-            opacity: 0.7,
-            fontSize: 13,
+            fontSize: 11,
+            fontWeight: 500,
+            letterSpacing: "0.02em",
             flexShrink: 0,
-            color: colors.toolbarLabel,
+            color: colors.accent,
+            borderBottom: `1px solid ${colors.toolbarBorder}`,
+            background: colors.accentMuted,
+            animation: "streaming-pulse 2s ease-in-out infinite",
           }}
         >
-          Receiving diagram...
+          Receiving diagram
         </div>
       )}
 
@@ -443,7 +489,7 @@ function App() {
           <button
             className="fullscreen-btn"
             onClick={handleToggleFullscreen}
-            title={isFullscreen ? "Exit fullscreen" : "Fullscreen"}
+            title={isFullscreen ? "Exit fullscreen (Esc)" : "Fullscreen"}
             style={{
               position: "absolute",
               bottom: 16,
@@ -461,7 +507,7 @@ function App() {
               color: colors.zoomText,
               cursor: "pointer",
               fontSize: 14,
-              boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
+              boxShadow: theme === "dark" ? "0 2px 8px rgba(0,0,0,0.4)" : "0 1px 4px rgba(0,0,0,0.08)",
               transition: "opacity 0.2s",
             }}
           >
