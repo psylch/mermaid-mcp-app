@@ -9,12 +9,16 @@
     "build": "npm run build:ui && npm run build:server",
     "dev:ui": "cd ui && npx vite",
     "start": "node server/dist/index.js",
+    "serve": "node server/dist/serve.js",
+    "dev:server": "tsx server/serve.ts",
     "test": "npx playwright test",
     "test:headed": "npx playwright test --headed"
   },
   "dependencies": {
+    "@hono/node-server": "^1.14.1",
     "@modelcontextprotocol/ext-apps": "^1.0.1",
-    "@modelcontextprotocol/sdk": "^1.26.0"
+    "@modelcontextprotocol/sdk": "^1.26.0",
+    "hono": "^4.7.6"
   },
   "devDependencies": {
     "@playwright/test": "^1.58.2",

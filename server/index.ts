@@ -11,7 +11,7 @@ import path from "node:path";
 
 const DIST_DIR = path.join(import.meta.dirname, "..", "..", "dist");
 
-function createServer(): McpServer {
+export function createServer(): McpServer {
   const server = new McpServer({
     name: "mermaid-app",
     version: "0.1.0",
