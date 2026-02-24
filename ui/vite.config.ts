@@ -8,5 +8,14 @@ export default defineConfig({
   build: {
     outDir: path.resolve(__dirname, "..", "dist"),
     emptyOutDir: true,
+    rollupOptions: {
+      external: [
+        "react",
+        "react-dom",
+        "react/jsx-runtime",
+        "react-dom/client",
+        "mermaid",
+      ],
+    },
   },
 });
