@@ -3,6 +3,7 @@ WORKDIR /src
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
+RUN cd ui && npm ci
 RUN npm run build
 
 FROM node:22-alpine
